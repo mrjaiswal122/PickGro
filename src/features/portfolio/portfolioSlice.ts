@@ -407,23 +407,23 @@ const uploadImageAsync = createAppAsyncThunk<
       //uploading to aws
       //if image is undefined then it will get out of the thunk
       if (!image) return { type: Purpose.Empty, url: "" };
-      const computeSHA256 = async (image: Blob) => {
-        const buffer = await image.arrayBuffer();
-        const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-        return hashHex;
-      };
+      // const computeSHA256 = async (image: Blob) => {
+      //   const buffer = await image.arrayBuffer();
+      //   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+      //   const hashArray = Array.from(new Uint8Array(hashBuffer));
+      //   const hashHex = hashArray
+      //     .map((b) => b.toString(16).padStart(2, "0"))
+      //     .join("");
+      //   return hashHex;
+      // };
 
-      const checksum = await computeSHA256(image);
+      // const checksum = await computeSHA256(image);
       const signedUrl = await getSignedURL(
         key,
         oldUrl,
         image.type,
         image.size,
-        checksum,
+        // checksum,
         routename,
         type
       );

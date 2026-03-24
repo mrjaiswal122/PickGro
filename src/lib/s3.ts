@@ -13,7 +13,8 @@ const maxFileSize = 1024 * 1024 * 5; // 5 MB
 
 // Create the S3 client
 const s3 = new S3Client({
-    region: process.env.AWS_REGION,
+    region: "auto",
+    endpoint:process.env.R2_ENDPOINT!,
     credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
@@ -21,7 +22,7 @@ const s3 = new S3Client({
 });
 
 // Get a signed URL for uploading an image to S3
-export async function getSignedURL(Key: string, oldUrl: string | undefined, imageType: string, size: number, checksum: string,routeName: string,type:Purpose) {
+export async function getSignedURL(Key: string, oldUrl: string | undefined, imageType: string, size: number, routeName: string,type:Purpose) {
     if (oldUrl) {
        const result= await deleteImage(oldUrl,type,routeName);
        if(result?.success==false) return '';
@@ -35,7 +36,7 @@ export async function getSignedURL(Key: string, oldUrl: string | undefined, imag
         Key,
         ContentType: imageType,
         ContentLength: size,
-        ChecksumSHA256: checksum,
+        // ChecksumSHA256: checksum,
         Metadata: {
             user: routeName,
         },
@@ -52,7 +53,8 @@ export async function getSignedURL(Key: string, oldUrl: string | undefined, imag
 
 // Delete an image by its URL and update the database
 export async function deleteImage(url: string, deleteType: Purpose,routeName:string|null=null,projectIndex:number|null=null): Promise<{ success: boolean; message: string }> {
-    const key = url.split('.com/')[1];
+    // const key = url.split('.com/')[1];
+    const key = new URL(url).pathname.slice(1);
     
     try {
         await dbConnect();
